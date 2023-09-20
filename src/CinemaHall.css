@@ -1,0 +1,46 @@
+#pixi-container {
+  display: flex;
+  justify-content: center;
+}
+
+.wrapper {
+  display: flex;
+  justify-content: space-around;
+  margin-bottom: 100px;
+}
+
+.wrapper__btn div {
+  padding: 5px;
+  display: flex;
+  align-items: center;
+  border: 2px solid #bdbdbd;
+  border-radius: 5px;
+  margin-bottom: 5px;
+}
+
+button {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+.btn__colorBlue {
+  display: inline-block;
+  height: 20px;
+  width: 20px;
+  background-color: rgb(103, 103, 255);
+}
+
+.btn__colorRed {
+  display: inline-block;
+  height: 20px;
+  width: 20px;
+  background-color: rgb(255, 92, 92);
+}
+
+.btn__colorOrange {
+  display: inline-block;
+  height: 20px;
+  width: 20px;
+  background-color: rgb(254, 203, 83);
+}
