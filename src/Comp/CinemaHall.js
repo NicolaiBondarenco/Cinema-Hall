@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { Stage, Layer, Rect } from 'react-konva'
-import PriceButton from './Comp/PriceButton'
-import Seat from './Comp/Seat'
-import SeatTransformer from './Comp/SeatTransformer'
+import PriceButton from './PriceButton'
+import Seat from './Seat'
+import SeatTransformer from './SeatTransformer'
 import './CinemaHall.css'
 
 const CinemaHall = () => {
