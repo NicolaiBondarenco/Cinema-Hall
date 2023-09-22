@@ -1,4 +1,4 @@
-import CinemaHall from './CinemaHall'
+import CinemaHall from './Comp/CinemaHall'
 
 function App() {
   return (

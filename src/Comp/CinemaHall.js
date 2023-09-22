@@ -4,13 +4,15 @@ import PriceButton from './PriceButton'
 import Seat from './Seat'
 import SeatTransformer from './SeatTransformer'
 import './CinemaHall.css'
+import schema from '../schema.json'
 
 const CinemaHall = () => {
-  const [seats, setSeats] = useState([])
-  const [newSeats, setNewSeats] = useState([])
+  const [seats, setSeats] = useState()
+  const [newSeats, setNewSeats] = useState()
   const myDataRef = useRef('0')
   const [rows, setRows] = useState(10)
   const [seatsPerRow, setSeatsPerRow] = useState(10)
+  const [name, setName] = useState('')
   const [selectedSeatIds, setSelectedSeatIds] = useState([])
   const [selectionRect, setSelectionRect] = useState({
     visible: false,
@@ -19,10 +21,6 @@ const CinemaHall = () => {
     x2: 0,
     y2: 0,
   })
-
-  useEffect(() => {
-    generateSeats()
-  }, [rows, seatsPerRow])
 
   const handleSeatClick = (place) => {
     if (myDataRef.current === '0') return
@@ -77,8 +75,19 @@ const CinemaHall = () => {
   const seatWidth = 30
   const seatHeight = 30
 
-  const generateSeats = () => {
-    const newSeats = []
+  const generateSeats = (e) => {
+    e.preventDefault()
+    if (!name || isNaN(rows) || isNaN(seatsPerRow)) {
+      return null
+    }
+
+    const newSeats = {
+      [name]: {
+        id: Math.floor(Math.random() * 1000), // You can generate a unique ID here
+        places: [],
+      },
+    }
+
     const padding = 5
 
     for (let row = 0; row < rows; row++) {
@@ -92,7 +101,7 @@ const CinemaHall = () => {
           y: y.toString(),
         }
 
-        newSeats.push({
+        newSeats[name].places.push({
           id,
           row: row + 1,
           place: place + 1,
@@ -102,6 +111,7 @@ const CinemaHall = () => {
       }
     }
 
+    // Now, newSeats is an object containing the sector name and its associated places
     setSeats(newSeats)
   }
 
@@ -199,7 +209,7 @@ const CinemaHall = () => {
   useEffect(() => {
     function setMultiplePrice() {
       setSeats((prevSeats) => {
-        return prevSeats.map((seat) => {
+        return prevSeats?.map((seat) => {
           if (selectedSeatIds.includes(seat.id)) {
             // Update the price of the selected seat
             return {
@@ -220,7 +230,7 @@ const CinemaHall = () => {
     <div>
       <h1>Cinema Hall Diagram</h1>
       <div className="wrapper">
-        <div>
+        <form className="form">
           <div>
             <label htmlFor="rows">Rows: </label>
             <input
@@ -232,7 +242,7 @@ const CinemaHall = () => {
             />
           </div>
           <div>
-            <label htmlFor="seats">Seats per row: </label>
+            <label htmlFor="seats">Seats: </label>
             <input
               type="number"
               id="seats"
@@ -241,7 +251,23 @@ const CinemaHall = () => {
               min="1"
             />
           </div>
-        </div>
+          <div>
+            <label htmlFor="seats">Name: </label>
+            <input
+              type="text"
+              id="seats"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+            />
+          </div>
+          <button
+            className="form__btn"
+            type="submit"
+            onClick={(e) => generateSeats(e)}
+          >
+            Create
+          </button>
+        </form>
         <div className="wrapper__btn">
           <PriceButton
             price="200"
@@ -263,24 +289,41 @@ const CinemaHall = () => {
       <div id="pixi-container">
         <Stage
           width={800}
-          height={400}
+          height={500}
           onMouseDown={onMouseDown}
           onMouseUp={onMouseUp}
           onMouseMove={onMouseMove}
         >
           <Layer>
             <Rect width={800} height={400} fill="gray" />
-            {seats.map((seat) => (
-              <Seat
-                key={seat.id}
-                seat={seat}
-                onClick={() => handleSeatClick(seat)}
-                onDragEnd={(e) => handleDragEnd(e, seat)}
-                seatWidth={30}
-                seatHeight={30}
-              />
-            ))}
-            {seats.map((selectedSeat) => (
+            {seats &&
+              Object.keys(seats).map((item) => {
+                const section = seats[item]
+                return section.places.map((seat) => (
+                  <Seat
+                    key={seat.id}
+                    seat={seat}
+                    onClick={() => handleSeatClick(seat)}
+                    onDragEnd={(e) => handleDragEnd(e, seat)}
+                    seatWidth={30}
+                    seatHeight={30}
+                  />
+                ))
+              })}
+            {seats &&
+              Object.keys(seats).map((item) => {
+                const section = seats[item]
+                return section.places.map((selectedSeat) => (
+                  <SeatTransformer
+                    key={`transformer_${selectedSeat.id}`}
+                    seat={selectedSeat}
+                    enabled={selectedSeatIds.includes(selectedSeat.id)}
+                    seatWidth={30}
+                    seatHeight={30}
+                  />
+                ))
+              })}
+            {/* {seats?.map((selectedSeat) => (
               <SeatTransformer
                 key={`transformer_${selectedSeat.id}`}
                 seat={selectedSeat}
@@ -288,7 +331,7 @@ const CinemaHall = () => {
                 seatWidth={30}
                 seatHeight={30}
               />
-            ))}
+            ))} */}
             <Rect
               x={selectionRect.x1}
               y={selectionRect.y1}
